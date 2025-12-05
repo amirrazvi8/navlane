@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NavLane – AI Personal Learning Mentor
 
-## Getting Started
+<img src="./public//banner.png" alt="NavLane Banner" width="100%"/>
+---
 
-First, run the development server:
+## 🚀 Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+NavLane is an AI-powered learning platform that guides students and developers with personalized roadmaps, insights, skill analysis, planning, and weekly reports. It acts as a **Real-Time Career GPS**, helping users escape tutorial hell and build consistent learning habits.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠 Tech Stack (V1)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### **Frontend:**
+- Next.js 15
+- TypeScript
+- TailwindCSS
+- shadcn/ui
+- Recharts
 
-## Learn More
+### **Backend:**
+- Node.js (AppRouter)
+- MongoDB + Mongoose
+- Auth.js
+- Modular service architecture
 
-To learn more about Next.js, take a look at the following resources:
+### **AI & Integrations:**
+- LangChain / LangGraph
+- Gemini LLM
+- Vector Embedding
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔥 Vision
 
-## Deploy on Vercel
+NavLane aims to become a complete AI learning companion that adapts to the user’s goals, skill level, and learning pace. Future versions will include:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Adaptive AI roadmap evolution  
+- Real-time job market mapping  
+- Project suggestions & interview prep  
+- Advanced learning analytics  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 👥 Collaborators
+- [Mohd Amir](https://github.com/amirrazvi8)  
+- [Mohd Ayan](https://github.com/mohdayan12)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
+
+MIT License  
+Copyright © 2025  
+**Mohd Amir & Mohd Ayan**
