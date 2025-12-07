@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Sidebar } from "@/components/Sidebar";
 
 export function Navbar() {
     return (
-        <nav className="sticky top-0 z-50 bg-background md:bg-transparent">
-            <div className="md:container px-2 flex h-16 items-center justify-between">
+        <nav className="sticky top-0 z-50 bg-background md:bg-transparent hidden sm:block">
+            <div className="md:container px-2 flex h-14 items-center justify-between">
                 <Link href="/" className=" flex items-center w-32">
                     <span className="">
                         <Image src="/navlane.png" alt="logo" width={200} height={200} className="w-32 h-10" />
@@ -30,7 +29,6 @@ export function Navbar() {
                 >
                     <span className="text-lg">Dashboard</span>
                 </Link>
-                <Sidebar />
             </div>
         </nav>
     );
