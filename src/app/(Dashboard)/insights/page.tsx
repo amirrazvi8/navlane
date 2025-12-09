@@ -2,6 +2,7 @@ import { TrendingSkills } from "./components/TrendingSkills";
 import { HotColdFields } from "./components/HotColdFields";
 import { MarketDemandLevels } from "./components/MarketDemandLevels";
 import { CrowdedVsNonCrowded } from "./components/CrowdedVsNonCrowded";
+import { LatestTechUpdates } from "./components/LatestTechUpdates";
 
 export default function InsightsPage() {
     return (
@@ -19,6 +20,9 @@ export default function InsightsPage() {
                 <div className="col-span-7 space-y-6 grid gap-6 lg:grid-cols-2">
                     <MarketDemandLevels />
                     <CrowdedVsNonCrowded />
+                </div>
+                <div className="col-span-7">
+                    <LatestTechUpdates/>
                 </div>
             </div>
         </div>
