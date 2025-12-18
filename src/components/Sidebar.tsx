@@ -10,7 +10,6 @@ const navLinks = [
     { label: "Insights", href: "/insights" },
     { label: "Roadmaps", href: "/roadmap" },
     { label: "Analysis", href: "/analysis" },
-    { label: "Planner", href: "/planner" },
     { label: "Reports", href: "/reports" },
     { label: "Profile", href: "/profile" },
 ];
