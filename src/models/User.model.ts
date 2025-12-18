@@ -4,6 +4,7 @@ import mongoose,{Schema} from 'mongoose';
   username: string;
   email:string;
   password:string;
+  googleId?:string;
   avatar?:string;
   about?:string;
   skills?:mongoose.Types.ObjectId[];
@@ -17,7 +18,8 @@ import mongoose,{Schema} from 'mongoose';
   name:{type:String,required:true},
   username:{type:String,required:true,unique:true},
   email:{type:String,required:true,unique:true},
-  password:{type:String,required:true},
+  password:{type:String},
+  googleId:{type:String},
   avatar:{type:String},
   about:{type:String},
   skills:[{type:mongoose.Schema.Types.ObjectId,ref:'Skill'}],
