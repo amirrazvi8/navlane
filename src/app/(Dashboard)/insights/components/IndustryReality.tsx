@@ -20,7 +20,9 @@ const realities = [
     },
 ];
 
-export function IndustryReality() {
+export function IndustryReality({ realitiesData }: { realitiesData?: any[] }) {
+    const dataToUse = realitiesData && realitiesData.length > 0 ? realitiesData : realities;
+
     return (
         <Card className="border-primary/30">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -29,7 +31,7 @@ export function IndustryReality() {
             </CardHeader>
 
             <CardContent className="gap-6 grid lg:grid-cols-2">
-                {realities.map((item, index) => (
+                {dataToUse.map((item, index) => (
                     <div key={index} className="p-3 rounded-lg border space-y-1 bg-muted/20 border-cyan-500/30">
                         <p className="text-sm font-semibold text-red-500">Myth: {item.myth}</p>
                         <p className="text-sm text-muted-foreground">Reality: {item.reality}</p>

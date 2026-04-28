@@ -4,17 +4,7 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recha
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 
-const data = [
-    { name: "Mon", tasks: 4 },
-    { name: "Tue", tasks: 6 },
-    { name: "Wed", tasks: 3 },
-    { name: "Thu", tasks: 7 },
-    { name: "Fri", tasks: 5 },
-    { name: "Sat", tasks: 8 },
-    { name: "Sun", tasks: 2 },
-];
-
-export function WeeklyStatsChart() {
+export function WeeklyStatsChart({ chartData }: { chartData?: { name: string, tasks: number }[] }) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -23,7 +13,17 @@ export function WeeklyStatsChart() {
 
     if (!mounted) return null;
 
-    const totalTasks = data.reduce((acc, curr) => acc + curr.tasks, 0);
+    const dataToUse = chartData && chartData.length > 0 ? chartData : [
+        { name: "Mon", tasks: 0 },
+        { name: "Tue", tasks: 0 },
+        { name: "Wed", tasks: 0 },
+        { name: "Thu", tasks: 0 },
+        { name: "Fri", tasks: 0 },
+        { name: "Sat", tasks: 0 },
+        { name: "Sun", tasks: 0 },
+    ];
+
+    const totalTasks = dataToUse.reduce((acc, curr) => acc + curr.tasks, 0);
 
     return (
         <Card className="h-full border-primary/30">
@@ -35,7 +35,7 @@ export function WeeklyStatsChart() {
             </CardHeader>
             <CardContent className="pl-2">
                 <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={data}>
+                    <BarChart data={dataToUse}>
                         <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                         <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
                         <Tooltip

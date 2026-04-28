@@ -1,7 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export function Navbar() {
+export async function Navbar() {
+    const session = await getServerSession(authOptions);
+
     return (
         <nav className="sticky top-0 z-50 bg-background md:bg-transparent hidden sm:block">
             <div className="md:container px-2 flex h-14 items-center justify-between">
@@ -23,12 +27,21 @@ export function Navbar() {
                     </Link>
                 </nav>
 
-                <Link
-                    href="/dashboard"
-                    className="text-sm font-medium transition-colors hover:text-primary w-32 bg-background/95 h-10 md:flex items-center justify-center rounded-full border border-primary/20 hidden "
-                >
-                    <span className="text-lg">Dashboard</span>
-                </Link>
+                {session ? (
+                    <Link
+                        href="/dashboard"
+                        className="text-sm font-medium transition-colors hover:text-primary w-32 bg-background/95 h-10 md:flex items-center justify-center rounded-full border border-primary/20 hidden "
+                    >
+                        <span className="text-lg">Dashboard</span>
+                    </Link>
+                ) : (
+                    <Link
+                        href="/login"
+                        className="text-sm font-medium transition-colors hover:text-primary w-32 bg-background/95 h-10 md:flex items-center justify-center rounded-full border border-primary/20 hidden "
+                    >
+                        <span className="text-lg">Sign In</span>
+                    </Link>
+                )}
             </div>
         </nav>
     );

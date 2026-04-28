@@ -32,7 +32,12 @@ const lifecycle = [
   },
 ]
 
-export function TechnologyLifeMap() {
+export function TechnologyLifeMap({ mapData }: { mapData?: any[] }) {
+  const unifiedData = lifecycle.map((l) => {
+    const aiStage = mapData?.find((m) => m.stage === l.stage);
+    return { ...l, tech: aiStage ? aiStage.tech : l.tech };
+  });
+
   return (
     <Card className="border-primary/30">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -43,7 +48,7 @@ export function TechnologyLifeMap() {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {lifecycle.map((item) => {
+        {unifiedData.map((item) => {
           const Icon = item.icon
           return (
             <div

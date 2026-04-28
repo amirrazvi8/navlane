@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles, CheckCircle2, Flame } from "lucide-react";
 
-export function WeeklySummary() {
+export function WeeklySummary({ totalTasks = 0, streak = 0 }: { totalTasks?: number, streak?: number }) {
     return (
         <Card className="h-full border-primary/30">
             <CardHeader>
@@ -14,9 +14,9 @@ export function WeeklySummary() {
                 <div className="flex justify-around">
                     <div className="space-y-1 ">
                         <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider font-semibold">
-                            <CheckCircle2 className="h-3 w-3" /> Tasks
+                            <CheckCircle2 className="h-3 w-3" /> Tasks This Week
                         </div>
-                        <div className="text-2xl font-bold">18</div>
+                        <div className="text-2xl font-bold">{totalTasks}</div>
                     </div>
                     <div className="border-r border-primary/50"></div>
 
@@ -24,7 +24,7 @@ export function WeeklySummary() {
                         <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider font-semibold">
                             <Flame className="h-3 w-3 text-orange-500" /> Streak
                         </div>
-                        <div className="text-2xl font-bold">12 Days</div>
+                        <div className="text-2xl font-bold">{streak} Days</div>
                     </div>
                 </div>
             </CardContent>

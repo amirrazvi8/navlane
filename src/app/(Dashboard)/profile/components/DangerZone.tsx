@@ -3,9 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2, TriangleAlert } from "lucide-react";
+import { signOut } from "next-auth/react";
 import Swal from "sweetalert2";
+import { useState } from "react";
 
 export function DangerZone() {
+    const [loading, setLoading] = useState(false);
+
     const handleDelete = () => {
         Swal.fire({
             title: "Are you sure?",
@@ -16,17 +20,34 @@ export function DangerZone() {
             cancelButtonColor: "#6b7280",
             confirmButtonText: "Yes, delete it!",
             cancelButtonText: "Cancel",
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                // Call API here to delete the account
+                setLoading(true);
+                try {
+                    const res = await fetch("/api/user/profile", { method: "DELETE" });
+                    
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.message || "Failed to delete account");
+                    }
 
-                Swal.fire({
-                    title: "Deleted!",
-                    text: "Your account has been removed.",
-                    icon: "success",
-                    timer: 1500,
-                    showConfirmButton: false,
-                });
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Your account has been permanently removed.",
+                        icon: "success",
+                        timer: 1500,
+                        showConfirmButton: false,
+                    });
+
+                    // Force the session to expire and kick the user back to the homepage
+                    setTimeout(() => {
+                        signOut({ callbackUrl: "/" });
+                    }, 1500);
+
+                } catch (error: any) {
+                    Swal.fire("Error", error.message, "error");
+                    setLoading(false);
+                }
             }
         });
     };
@@ -41,9 +62,9 @@ export function DangerZone() {
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="border-t pt-4">
-                    <Button variant="destructive" className="w-fit justify-start cursor-pointer" onClick={handleDelete}>
+                    <Button variant="destructive" className="w-fit justify-start cursor-pointer" onClick={handleDelete} disabled={loading}>
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete Account
+                        {loading ? "Deleting..." : "Delete Account"}
                     </Button>
                 </div>
             </CardContent>

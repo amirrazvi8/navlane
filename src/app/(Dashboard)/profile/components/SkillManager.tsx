@@ -1,38 +1,55 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Plus } from "lucide-react";
+import { X, Plus, Loader2 } from "lucide-react";
 import { VscTools } from "react-icons/vsc";
-
 
 interface Skill {
     name: string;
     level: string;
 }
 
-export function SkillManager() {
-    const [skills, setSkills] = useState<Skill[]>([
-        { name: "React", level: "Advanced" },
-        { name: "TypeScript", level: "Intermediate" },
-        { name: "Node.js", level: "Beginner" },
-    ]);
+export function SkillManager({ initialSkills = [] }: { initialSkills?: Skill[] }) {
+    const [skills, setSkills] = useState<Skill[]>(initialSkills);
     const [newSkill, setNewSkill] = useState("");
     const [newLevel, setNewLevel] = useState("Beginner");
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+
+    const updateSkillsInDB = async (updatedSkills: Skill[]) => {
+        setLoading(true);
+        try {
+            const res = await fetch("/api/user/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ skills: updatedSkills }),
+            });
+            if (!res.ok) throw new Error("Failed to update skills");
+            setSkills(updatedSkills);
+            router.refresh();
+        } catch (error: any) {
+            Swal.fire("Error", error.message, "error");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const addSkill = () => {
-        if (newSkill && !skills.find((s) => s.name === newSkill)) {
-            setSkills([...skills, { name: newSkill, level: newLevel }]);
+        if (newSkill && !skills.find((s) => s.name.toLowerCase() === newSkill.toLowerCase())) {
+            updateSkillsInDB([...skills, { name: newSkill, level: newLevel }]);
             setNewSkill("");
         }
     };
 
     const removeSkill = (skillName: string) => {
-        setSkills(skills.filter((s) => s.name !== skillName));
+        updateSkillsInDB(skills.filter((s) => s.name !== skillName));
     };
 
     return (
@@ -45,8 +62,8 @@ export function SkillManager() {
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="flex gap-2 lg:gap-8">
-                    <Input placeholder="Add a new skill..." value={newSkill} onChange={(e) => setNewSkill(e.target.value)} className="flex-1" />
-                    <Select value={newLevel} onValueChange={setNewLevel}>
+                    <Input placeholder="Add a new skill..." value={newSkill} onChange={(e) => setNewSkill(e.target.value)} className="flex-1" disabled={loading} />
+                    <Select value={newLevel} onValueChange={setNewLevel} disabled={loading}>
                         <SelectTrigger className="w-[140px]">
                             <SelectValue />
                         </SelectTrigger>
@@ -54,10 +71,11 @@ export function SkillManager() {
                             <SelectItem value="Beginner">Beginner</SelectItem>
                             <SelectItem value="Intermediate">Intermediate</SelectItem>
                             <SelectItem value="Advanced">Advanced</SelectItem>
+                            <SelectItem value="Expert">Expert</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button onClick={addSkill}>
-                        <Plus className="h-4 w-4" />Add
+                    <Button onClick={addSkill} disabled={loading || !newSkill}>
+                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Plus className="h-4 w-4" />Add</>}
                     </Button>
                 </div>
 
@@ -71,6 +89,7 @@ export function SkillManager() {
                                 size="icon"
                                 className="h-4 w-4 hover:bg-transparent hover:text-destructive"
                                 onClick={() => removeSkill(skill.name)}
+                                disabled={loading}
                             >
                                 <X className="h-3 w-3" />
                             </Button>

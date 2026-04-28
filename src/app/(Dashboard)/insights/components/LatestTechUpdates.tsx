@@ -1,3 +1,5 @@
+"use client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExternalLink, Newspaper } from "lucide-react";
@@ -27,7 +29,11 @@ const updates = [
     },
 ];
 
-export function LatestTechUpdates() {
+export function LatestTechUpdates({ updatesData }: { updatesData?: any[] }) {
+    const [showAll, setShowAll] = useState(false);
+    const dataToUse = updatesData && updatesData.length > 0 ? updatesData : updates;
+    const visibleData = showAll ? dataToUse : dataToUse.slice(0, 3);
+
     return (
         <Card className="border-primary/30">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -35,9 +41,9 @@ export function LatestTechUpdates() {
                 <Newspaper className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-                {updates.map((update) => (
+                {visibleData.map((update, idx) => (
                     <div
-                        key={update.id}
+                        key={idx}
                         className="flex flex-col lg:flex-row justify-between items-center space-y-2 p-3 border rounded-lg bg-muted/20 hover:bg-muted/30 transition-colors"
                     >
                         <div>
@@ -48,16 +54,19 @@ export function LatestTechUpdates() {
                             <p className="text-sm text-muted-foreground line-clamp-2">{update.description}</p>
                         </div>
                         <Link
-                            href={update.link}
-                            className="text-xs text-secondary flex items-center hover:underline mt-1 border px-6 rounded-full border-primary/20 h-10"
+                            href={update.link !== "#" ? update.link : `https://www.google.com/search?q=${encodeURIComponent(update.title)}`}
+                            target="_blank"
+                            className="text-xs text-secondary flex items-center hover:underline mt-1 border px-6 rounded-full border-primary/20 h-10 min-w-32 justify-center"
                         >
                             Read More <ExternalLink className="ml-1 h-3 w-3" />
                         </Link>
                     </div>
                 ))}
-                <Button variant="outline" className="w-full mt-auto cursor-pointer">
-                    View More Updates
-                </Button>
+                {!showAll && dataToUse.length > 3 && (
+                    <Button variant="outline" className="w-full mt-auto cursor-pointer" onClick={() => setShowAll(true)}>
+                        View More Updates
+                    </Button>
+                )}
             </CardContent>
         </Card>
     );

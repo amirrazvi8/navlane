@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, TrendingUp, Flame } from "lucide-react";
 
-const roiData = [
+const predefinedRoiData = [
     {
         skill: "DevOps",
         time: "6–8 weeks",
@@ -33,7 +33,9 @@ const roiData = [
     },
 ];
 
-export function SkillROI() {
+export function SkillROI({ roiData }: { roiData?: any[] }) {
+    const dataToUse = roiData && roiData.length > 0 ? roiData : predefinedRoiData;
+
     return (
         <Card className="border-primary/30">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -42,7 +44,7 @@ export function SkillROI() {
             </CardHeader>
 
             <CardContent className="space-y-4">
-                {roiData.map((item) => (
+                {dataToUse.map((item) => (
                     <div key={item.skill} className="flex items-center justify-between gap-4 p-3 rounded-lg border bg-muted/20 border-cyan-500/30">
                         <div className="space-y-1">
                             <p className="text-sm font-semibold">{item.skill}</p>
@@ -61,13 +63,12 @@ export function SkillROI() {
 
                         <Badge
                             variant="outline"
-                            className={`text-xs font-semibold ${
-                                item.score >= 8
+                            className={`text-xs font-semibold ${item.score >= 8
                                     ? "text-green-500 border-green-500/20"
                                     : item.score >= 5
-                                    ? "text-yellow-500 border-yellow-500/20"
-                                    : "text-red-500 border-red-500/20"
-                            }`}
+                                        ? "text-yellow-500 border-yellow-500/20"
+                                        : "text-red-500 border-red-500/20"
+                                }`}
                         >
                             ROI {item.score}
                         </Badge>

@@ -3,17 +3,16 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const data = [
-    { day: "Mon", score: 80 },
-    { day: "Tue", score: 90 },
-    { day: "Wed", score: 70 },
-    { day: "Thu", score: 85 },
-    { day: "Fri", score: 95 },
-    { day: "Sat", score: 60 },
-    { day: "Sun", score: 50 },
-];
-
-export function ProductivityChart() {
+export function ProductivityChart({ chartData }: { chartData?: { day: string, score: number }[] }) {
+    const dataToUse = chartData && chartData.length > 0 ? chartData : [
+        { day: "Mon", score: 0 },
+        { day: "Tue", score: 0 },
+        { day: "Wed", score: 0 },
+        { day: "Thu", score: 0 },
+        { day: "Fri", score: 0 },
+        { day: "Sat", score: 0 },
+        { day: "Sun", score: 0 },
+    ];
     return (
         <Card className="h-full border-primary/30">
             <CardHeader>
@@ -21,7 +20,7 @@ export function ProductivityChart() {
             </CardHeader>
             <CardContent className="pl-2">
                 <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={data}>
+                    <LineChart data={dataToUse}>
                         <XAxis dataKey="day" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                         <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                         <Tooltip
