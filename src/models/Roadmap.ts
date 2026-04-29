@@ -11,6 +11,9 @@ export interface IMilestone {
   description: string;
   status: 'upcoming' | 'in-progress' | 'completed';
   subtasks: ISubtask[];
+  quizScore?: number | null;
+  quizTotal?: number | null;
+  quizTakenAt?: Date | null;
 }
 
 export interface IRoadmap {
@@ -37,6 +40,9 @@ const MilestoneSchema = new mongoose.Schema<IMilestone>({
     default: 'upcoming',
   },
   subtasks: { type: [SubtaskSchema], default: [] },
+  quizScore: { type: Number, default: null },
+  quizTotal: { type: Number, default: null },
+  quizTakenAt: { type: Date, default: null },
 });
 
 const RoadmapSchema = new mongoose.Schema<IRoadmap>(

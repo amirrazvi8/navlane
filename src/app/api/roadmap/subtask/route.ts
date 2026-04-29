@@ -62,7 +62,11 @@ export async function PUT(req: Request) {
 
         await roadmap.save();
 
-        return NextResponse.json({ message: "Task completed successfully" }, { status: 200 });
+        return NextResponse.json({ 
+            message: "Task completed successfully",
+            milestoneCompleted: allCompleted,
+            milestoneId: allCompleted ? milestoneId : null
+        }, { status: 200 });
     } catch (error) {
         console.error("Task completion error:", error);
         return NextResponse.json({ message: "Something went wrong" }, { status: 500 });

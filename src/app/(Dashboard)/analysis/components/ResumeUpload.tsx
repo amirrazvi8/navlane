@@ -35,6 +35,7 @@ export function ResumeUpload({ targetGoal, setAnalysisResult }: { targetGoal: st
               method: "POST",
               body: formData
           });
+          console.log(res);
 
           if (!res.ok) {
               const data = await res.json();

@@ -3,12 +3,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import { CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, Loader2, Trophy, Brain } from "lucide-react";
 import Swal from "sweetalert2";
+import { QuizModal } from "./QuizModal";
 
 export function RoadmapTimeline({ roadmapData }: { roadmapData?: any }) {
     const [expandedMilestones, setExpandedMilestones] = useState<string[]>([]);
     const [loadingId, setLoadingId] = useState<string | null>(null);
+    const [quizModal, setQuizModal] = useState<{ open: boolean; milestoneId: string; milestoneTitle: string }>({
+        open: false,
+        milestoneId: "",
+        milestoneTitle: "",
+    });
     const router = useRouter();
     
     if (!roadmapData) return null;
@@ -32,16 +38,43 @@ export function RoadmapTimeline({ roadmapData }: { roadmapData?: any }) {
                 throw new Error("Failed to complete task");
             }
 
-            Swal.fire({
-                title: "Task Completed!",
-                icon: "success",
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 2000
-            });
+            const data = await res.json();
 
-            router.refresh();
+            if (data.milestoneCompleted) {
+                // Milestone just completed — prompt quiz
+                const result = await Swal.fire({
+                    title: "Module Completed! 🎉",
+                    text: "Take a quiz to test your understanding of this module?",
+                    icon: "success",
+                    showCancelButton: true,
+                    confirmButtonText: "Start Quiz",
+                    cancelButtonText: "Later",
+                    confirmButtonColor: "#00f5d4",
+                    cancelButtonColor: "#6b7280",
+                });
+
+                router.refresh();
+
+                if (result.isConfirmed) {
+                    // Find the milestone title
+                    const milestone = milestones.find((m: any) => m._id === milestoneId);
+                    setQuizModal({
+                        open: true,
+                        milestoneId,
+                        milestoneTitle: milestone?.title || "Module Quiz",
+                    });
+                }
+            } else {
+                Swal.fire({
+                    title: "Task Completed!",
+                    icon: "success",
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                router.refresh();
+            }
         } catch (error: any) {
             Swal.fire("Error", error.message, "error");
         } finally {
@@ -49,7 +82,16 @@ export function RoadmapTimeline({ roadmapData }: { roadmapData?: any }) {
         }
     };
 
+    const openQuizForMilestone = (milestone: any) => {
+        setQuizModal({
+            open: true,
+            milestoneId: milestone._id,
+            milestoneTitle: milestone.title,
+        });
+    };
+
     return (
+        <>
         <Card className=" border-primary/20 shadow-lg shadow-primary/5">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -66,6 +108,8 @@ export function RoadmapTimeline({ roadmapData }: { roadmapData?: any }) {
                     const compSubs = milestone.subtasks?.filter((s: any) => s.completed).length || 0;
                     const progress = Math.round((compSubs / totalSubs) * 100);
                     const isExpanded = expandedMilestones.includes(milestone._id || String(index));
+                    const hasQuizScore = milestone.quizScore !== null && milestone.quizScore !== undefined;
+                    const canTakeQuiz = milestone.status === "completed" && !hasQuizScore;
 
                     return (
                     <div key={milestone._id || index} className="relative pl-8">
@@ -101,9 +145,29 @@ export function RoadmapTimeline({ roadmapData }: { roadmapData?: any }) {
                                         )}
                                     </Button>
                                 </div>
-                                <span className="text-xs font-medium text-muted-foreground flex items-center gap-1 bg-muted/50 px-2 py-1 rounded">
-                                    <Clock className="h-3 w-3" /> Step {index + 1}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    {/* Quiz Score Badge */}
+                                    {hasQuizScore && (
+                                        <span
+                                            className="text-xs font-semibold flex items-center gap-1 px-2.5 py-1 rounded-full"
+                                            style={{
+                                                background: (milestone.quizScore / milestone.quizTotal) >= 0.6
+                                                    ? "rgba(0, 245, 212, 0.1)"
+                                                    : "rgba(255, 107, 157, 0.1)",
+                                                color: (milestone.quizScore / milestone.quizTotal) >= 0.6
+                                                    ? "#00f5d4"
+                                                    : "#ff6b9d",
+                                                border: `1px solid ${(milestone.quizScore / milestone.quizTotal) >= 0.6 ? "rgba(0, 245, 212, 0.25)" : "rgba(255, 107, 157, 0.25)"}`,
+                                            }}
+                                        >
+                                            <Trophy className="h-3 w-3" />
+                                            Quiz: {milestone.quizScore}/{milestone.quizTotal}
+                                        </span>
+                                    )}
+                                    <span className="text-xs font-medium text-muted-foreground flex items-center gap-1 bg-muted/50 px-2 py-1 rounded">
+                                        <Clock className="h-3 w-3" /> Step {index + 1}
+                                    </span>
+                                </div>
                             </div>
                             <p className="text-sm text-muted-foreground mb-3">{milestone.description}</p>
 
@@ -155,11 +219,34 @@ export function RoadmapTimeline({ roadmapData }: { roadmapData?: any }) {
                                         <Circle className="h-4 w-4 mr-1" /> Upcoming
                                     </div>
                                 )}
+                                {/* Take Quiz button for completed milestones without a quiz score */}
+                                {canTakeQuiz && (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={(e) => { e.stopPropagation(); openQuizForMilestone(milestone); }}
+                                        className="ml-auto text-xs gap-1.5 border-[#7b61ff]/30 text-[#7b61ff] hover:bg-[#7b61ff]/10 hover:text-[#7b61ff]"
+                                    >
+                                        <Brain className="h-3.5 w-3.5" />
+                                        Take Quiz
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </div>
                 )})}
             </CardContent>
         </Card>
+
+        {/* Quiz Modal */}
+        <QuizModal
+            isOpen={quizModal.open}
+            onClose={() => setQuizModal({ open: false, milestoneId: "", milestoneTitle: "" })}
+            roadmapId={roadmapId}
+            milestoneId={quizModal.milestoneId}
+            milestoneTitle={quizModal.milestoneTitle}
+            onQuizComplete={() => router.refresh()}
+        />
+        </>
     );
 }
