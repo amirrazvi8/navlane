@@ -1,34 +1,39 @@
 "use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { User, Mail, GraduationCap, Edit, Loader2 } from "lucide-react";
-import { useState, useRef } from "react";
-import Swal from "sweetalert2";
+import { Button } from "@/components/ui/button";
+import { User, Mail, MapPin, Phone, Loader2, Check, Compass, Save } from "lucide-react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
+import { useAppDispatch } from "@/store/hooks";
+import { updatePersonalInfo } from "@/store/userProfileSlice";
 
-export function ProfileInfo({ initialData = {} }: { initialData?: any }) {
+interface ProfileInfoProps {
+    initialData: {
+        name: string;
+        email: string;
+        bio: string;
+        location: string;
+        phone: string;
+        profileImage: string;
+        locationPreference: string;
+    };
+}
+
+export function ProfileInfo({ initialData }: ProfileInfoProps) {
     const [name, setName] = useState(initialData.name || "");
     const [bio, setBio] = useState(initialData.bio || "");
-    const [education, setEducation] = useState(initialData.education || "");
-    const [profileImage, setProfileImage] = useState(initialData.profileImage || "");
+    const [location, setLocation] = useState(initialData.location || "");
+    const [phone, setPhone] = useState(initialData.phone || "");
+    const [locationPreference, setLocationPreference] = useState(initialData.locationPreference || "");
     const [loading, setLoading] = useState(false);
+    const [saved, setSaved] = useState(false);
     const router = useRouter();
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setProfileImage(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+    const dispatch = useAppDispatch();
 
     const handleSave = async () => {
         setLoading(true);
@@ -36,70 +41,104 @@ export function ProfileInfo({ initialData = {} }: { initialData?: any }) {
             const res = await fetch("/api/user/profile", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, bio, education, profileImage }),
+                body: JSON.stringify({ name, bio, location, phone, locationPreference }),
             });
-
             if (!res.ok) throw new Error("Failed to update profile");
-            
-            Swal.fire("Success", "Profile updated successfully!", "success");
-            router.refresh(); // Refresh page to reflect new data everywhere
+
+            // Sync to Redux global state
+            dispatch(updatePersonalInfo({ name, bio, location, phone, locationPreference }));
+
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
+            router.refresh();
         } catch (error: any) {
             Swal.fire("Error", error.message, "error");
         } finally {
             setLoading(false);
         }
     };
+
+    const inputClasses = "bg-muted/20 border-border/40 focus:bg-background focus:border-primary/40 transition-all duration-200 h-10";
+    const iconClasses = "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40";
+
     return (
-        <Card>
-            <CardContent className="space-y-6">
-                <div className="flex items-center gap-6">
-                    <Avatar className="h-24 w-24 relative">
-                        <AvatarImage src={profileImage || "/placeholder-avatar.jpg"} alt="Profile" className="object-cover" />
-                        <AvatarFallback className="text-lg">{(name || "U")[0].toUpperCase()}</AvatarFallback>
-                        <span
-                            className="absolute top-0 right-0 cursor-pointer rounded-full bg-gray-900 hover:bg-gray-800 transition-all duration-300 w-6 h-6 flex items-center justify-center "
-                            onClick={() => fileInputRef.current?.click()}
-                        >
-                            <Edit className="w-4 h-4 text-white" />
-                        </span>
-                    </Avatar>
-                    <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2 lg:gap-20">
+        <Card className="border-border/40 bg-card/80 backdrop-blur-sm hover:border-border/60 transition-colors duration-300">
+            <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2.5 text-lg">
+                    <div className="p-2 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/10">
+                        <User className="h-4 w-4 text-primary" />
+                    </div>
+                    Personal Information
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name" className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider">Full Name</Label>
                         <div className="relative">
-                            <User className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full Name" className="pl-8" disabled={loading} />
+                            <User className={iconClasses} />
+                            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" className={`pl-9 ${inputClasses}`} disabled={loading} />
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email" className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider">Email</Label>
                         <div className="relative">
-                            <Mail className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input id="email" type="email" value={initialData.email || ""} placeholder="email@example.com" className="pl-8" disabled />
+                            <Mail className={iconClasses} />
+                            <Input id="email" type="email" value={initialData.email || ""} className={`pl-9 ${inputClasses} opacity-50 cursor-not-allowed`} disabled />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="phone" className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider">Phone</Label>
+                        <div className="relative">
+                            <Phone className={iconClasses} />
+                            <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" className={`pl-9 ${inputClasses}`} disabled={loading} />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="location" className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider">Location</Label>
+                        <div className="relative">
+                            <MapPin className={iconClasses} />
+                            <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Mumbai, India" className={`pl-9 ${inputClasses}`} disabled={loading} />
                         </div>
                     </div>
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="bio">About</Label>
-                    <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Tell us about yourself..." className="min-h-30" disabled={loading} />
-                </div>
-
-                <div className="space-y-2">
-                    <Label htmlFor="education">Education / Role</Label>
+                    <Label htmlFor="locationPreference" className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider">
+                        Location Preference
+                    </Label>
                     <div className="relative">
-                        <GraduationCap className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input id="education" value={education} onChange={(e) => setEducation(e.target.value)} placeholder="e.g. Computer Science Student" className="pl-8" disabled={loading} />
+                        <Compass className={iconClasses} />
+                        <Input id="locationPreference" value={locationPreference} onChange={(e) => setLocationPreference(e.target.value)} placeholder="e.g. Remote, Bangalore, New York" className={`pl-9 ${inputClasses}`} disabled={loading} />
                     </div>
+                    <p className="text-[11px] text-muted-foreground/50 pl-1">Where you'd prefer to work — used to filter job opportunities</p>
                 </div>
 
-                <div className="flex justify-end">
-                    <Button onClick={handleSave} disabled={loading}>
-                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save Changes
+                <div className="space-y-2">
+                    <Label htmlFor="bio" className="text-xs font-semibold text-muted-foreground/80 uppercase tracking-wider">About</Label>
+                    <Textarea
+                        id="bio"
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        placeholder="Write a brief introduction about yourself, your interests, and career aspirations..."
+                        className="min-h-[100px] bg-muted/20 border-border/40 focus:bg-background focus:border-primary/40 transition-all duration-200 resize-none leading-relaxed"
+                        disabled={loading}
+                    />
+                </div>
+
+                <div className="flex justify-end pt-1">
+                    <Button
+                        onClick={handleSave}
+                        disabled={loading}
+                        className="min-w-[150px] gap-2 shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all duration-200"
+                    >
+                        {loading ? (
+                            <><Loader2 className="h-4 w-4 animate-spin" />Saving...</>
+                        ) : saved ? (
+                            <><Check className="h-4 w-4" />Saved!</>
+                        ) : (
+                            <><Save className="h-4 w-4" />Save Changes</>
+                        )}
                     </Button>
                 </div>
             </CardContent>

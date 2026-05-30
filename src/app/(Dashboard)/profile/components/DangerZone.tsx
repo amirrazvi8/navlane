@@ -13,24 +13,22 @@ export function DangerZone() {
     const handleDelete = () => {
         Swal.fire({
             title: "Are you sure?",
-            text: "This action is permanent and cannot be undone.",
+            text: "This action is permanent and cannot be undone. All your data will be deleted.",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#d33",
             cancelButtonColor: "#6b7280",
-            confirmButtonText: "Yes, delete it!",
+            confirmButtonText: "Yes, delete my account",
             cancelButtonText: "Cancel",
         }).then(async (result) => {
             if (result.isConfirmed) {
                 setLoading(true);
                 try {
                     const res = await fetch("/api/user/profile", { method: "DELETE" });
-                    
                     if (!res.ok) {
                         const errorData = await res.json();
                         throw new Error(errorData.message || "Failed to delete account");
                     }
-
                     Swal.fire({
                         title: "Deleted!",
                         text: "Your account has been permanently removed.",
@@ -38,12 +36,9 @@ export function DangerZone() {
                         timer: 1500,
                         showConfirmButton: false,
                     });
-
-                    // Force the session to expire and kick the user back to the homepage
                     setTimeout(() => {
                         signOut({ callbackUrl: "/" });
                     }, 1500);
-
                 } catch (error: any) {
                     Swal.fire("Error", error.message, "error");
                     setLoading(false);
@@ -53,18 +48,24 @@ export function DangerZone() {
     };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-destructive">
-                    <TriangleAlert className="h-5 w-5" />
+        <Card className="border-destructive/15 bg-card/80 backdrop-blur-sm hover:border-destructive/25 transition-colors duration-300">
+            <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2.5 text-lg text-destructive">
+                    <div className="p-2 rounded-xl bg-gradient-to-br from-destructive/15 to-destructive/5 border border-destructive/10">
+                        <TriangleAlert className="h-4 w-4" />
+                    </div>
                     Danger Zone
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-                <div className="border-t pt-4">
-                    <Button variant="destructive" className="w-fit justify-start cursor-pointer" onClick={handleDelete} disabled={loading}>
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        {loading ? "Deleting..." : "Delete Account"}
+            <CardContent>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-destructive/5 border border-destructive/10">
+                    <div className="space-y-1">
+                        <p className="text-sm font-medium">Delete Account</p>
+                        <p className="text-xs text-muted-foreground">Permanently remove your account and all associated data.</p>
+                    </div>
+                    <Button variant="destructive" size="sm" className="cursor-pointer shrink-0 shadow-lg shadow-destructive/10" onClick={handleDelete} disabled={loading}>
+                        <Trash2 className="mr-2 h-3.5 w-3.5" />
+                        {loading ? "Deleting..." : "Delete"}
                     </Button>
                 </div>
             </CardContent>
