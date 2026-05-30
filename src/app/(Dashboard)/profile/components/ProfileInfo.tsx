@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useAppDispatch } from "@/store/hooks";
 import { updatePersonalInfo } from "@/store/userProfileSlice";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 interface ProfileInfoProps {
     initialData: {
@@ -38,12 +40,7 @@ export function ProfileInfo({ initialData }: ProfileInfoProps) {
     const handleSave = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/user/profile", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, bio, location, phone, locationPreference }),
-            });
-            if (!res.ok) throw new Error("Failed to update profile");
+            await axios.put("/api/user/profile", { name, bio, location, phone, locationPreference });
 
             // Sync to Redux global state
             dispatch(updatePersonalInfo({ name, bio, location, phone, locationPreference }));
@@ -52,7 +49,7 @@ export function ProfileInfo({ initialData }: ProfileInfoProps) {
             setTimeout(() => setSaved(false), 2000);
             router.refresh();
         } catch (error: any) {
-            Swal.fire("Error", error.message, "error");
+            Swal.fire("Error", handleApiError(error), "error");
         } finally {
             setLoading(false);
         }

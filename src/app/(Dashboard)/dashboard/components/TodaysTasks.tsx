@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { IoHourglass } from "react-icons/io5";
 import Swal from "sweetalert2";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 const statusClasses: Record<string, string> = {
     Completed: "bg-green-500/10 text-green-500 border-green-500/50",
@@ -28,16 +30,7 @@ export function TodaysTasks({ tasksData = [], roadmapId, milestoneId }: { tasksD
         
         setLoadingId(subtaskId);
         try {
-            const res = await fetch("/api/roadmap/subtask", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ roadmapId, milestoneId, subtaskId }),
-            });
-
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message || "Failed to complete task");
-            }
+            await axios.put("/api/roadmap/subtask", { roadmapId, milestoneId, subtaskId });
 
             Swal.fire({
                 title: "Task Completed!",
@@ -50,7 +43,7 @@ export function TodaysTasks({ tasksData = [], roadmapId, milestoneId }: { tasksD
 
             router.refresh();
         } catch (error: any) {
-            Swal.fire("Error", error.message, "error");
+            Swal.fire("Error", handleApiError(error), "error");
         } finally {
             setLoadingId(null);
         }

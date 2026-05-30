@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { User, Mail, Lock, BookOpen, FileText, ArrowRight } from "lucide-react";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -31,40 +33,23 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const res = await fetch("/api/user/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
+            const res = await axios.post("/api/user/register", formData);
+            
+            Swal.fire({
+                title: "Registration Successful!",
+                text: "Welcome to NavLane. You can now login.",
+                icon: "success",
+                background: "#1e1b4b",
+                color: "#fff",
+                confirmButtonColor: "#4f46e5",
+            }).then(() => {
+                router.push("/login");
             });
-            const data = await res.json();
-
-            if (res.ok) {
-                Swal.fire({
-                    title: "Registration Successful!",
-                    text: "Welcome to NavLane. You can now login.",
-                    icon: "success",
-                    background: "#1e1b4b",
-                    color: "#fff",
-                    confirmButtonColor: "#4f46e5",
-                }).then(() => {
-                    router.push("/login");
-                });
-            } else {
-                console.log("fronterror-register", res);
-                Swal.fire({
-                    title: "Registration Failed",
-                    text: data.message || "Something went wrong",
-                    icon: "error",
-                    background: "#1e1b4b",
-                    color: "#fff",
-                    confirmButtonColor: "#e11d48",
-                });
-            }
         } catch (error) {
             console.log("fronterror-register", error);
             Swal.fire({
-                title: "Error",
-                text: "Network or server error",
+                title: "Registration Failed",
+                text: handleApiError(error),
                 icon: "error",
                 background: "#1e1b4b",
                 color: "#fff",

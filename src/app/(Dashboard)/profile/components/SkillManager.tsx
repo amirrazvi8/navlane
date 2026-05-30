@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { X, Plus, Loader2, Wrench } from "lucide-react";
 import { useAppDispatch } from "@/store/hooks";
 import { updateSkills } from "@/store/userProfileSlice";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 interface Skill {
     name: string;
@@ -42,12 +44,7 @@ export function SkillManager({ initialSkills = [] }: { initialSkills?: Skill[] }
     const updateSkillsInDB = async (updatedSkills: Skill[]) => {
         setLoading(true);
         try {
-            const res = await fetch("/api/user/profile", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ skills: updatedSkills }),
-            });
-            if (!res.ok) throw new Error("Failed to update skills");
+            await axios.put("/api/user/profile", { skills: updatedSkills });
             setSkills(updatedSkills);
 
             // Sync to Redux global state
@@ -55,7 +52,7 @@ export function SkillManager({ initialSkills = [] }: { initialSkills?: Skill[] }
 
             router.refresh();
         } catch (error: any) {
-            Swal.fire("Error", error.message, "error");
+            Swal.fire("Error", handleApiError(error), "error");
         } finally {
             setLoading(false);
         }

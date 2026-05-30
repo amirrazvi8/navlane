@@ -16,6 +16,8 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import { useAppDispatch } from "@/store/hooks";
 import { setUserProfile } from "@/store/userProfileSlice";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 interface UserData {
     name: string;
@@ -83,15 +85,10 @@ export function ProfilePageClient({ user }: { user: UserData }) {
     const handleImageChange = async (base64: string) => {
         setProfileImage(base64);
         try {
-            const res = await fetch("/api/user/profile", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ profileImage: base64 }),
-            });
-            if (!res.ok) throw new Error("Failed to upload image");
+            await axios.put("/api/user/profile", { profileImage: base64 });
             router.refresh();
         } catch (err: any) {
-            Swal.fire("Error", err.message, "error");
+            Swal.fire("Error", handleApiError(err), "error");
         }
     };
 

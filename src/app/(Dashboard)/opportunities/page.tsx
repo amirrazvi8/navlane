@@ -25,6 +25,8 @@ import {
   selectSkills,
   selectIsHydrated,
 } from "@/store/userProfileSlice";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 interface MatchedJob {
   externalId: string;
@@ -68,17 +70,13 @@ export default function OpportunitiesPage() {
       if (refresh) params.set("refresh", "true");
       if (locationPreference) params.set("location", locationPreference);
 
-      const res = await fetch(`/api/opportunities?${params.toString()}`);
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to fetch opportunities");
-      }
+      const res = await axios.get(`/api/opportunities?${params.toString()}`);
+      const data = res.data;
 
       setJobs(data.jobs || []);
       setFromCache(data.fromCache || false);
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      setError(handleApiError(err));
     } finally {
       setLoading(false);
       setRefreshing(false);

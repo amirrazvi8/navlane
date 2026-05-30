@@ -6,6 +6,8 @@ import { Trash2, TriangleAlert } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Swal from "sweetalert2";
 import { useState } from "react";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 export function DangerZone() {
     const [loading, setLoading] = useState(false);
@@ -24,11 +26,7 @@ export function DangerZone() {
             if (result.isConfirmed) {
                 setLoading(true);
                 try {
-                    const res = await fetch("/api/user/profile", { method: "DELETE" });
-                    if (!res.ok) {
-                        const errorData = await res.json();
-                        throw new Error(errorData.message || "Failed to delete account");
-                    }
+                    await axios.delete("/api/user/profile");
                     Swal.fire({
                         title: "Deleted!",
                         text: "Your account has been permanently removed.",
@@ -40,7 +38,7 @@ export function DangerZone() {
                         signOut({ callbackUrl: "/" });
                     }, 1500);
                 } catch (error: any) {
-                    Swal.fire("Error", error.message, "error");
+                    Swal.fire("Error", handleApiError(error), "error");
                     setLoading(false);
                 }
             }

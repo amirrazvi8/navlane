@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Target, Loader2, Check } from "lucide-react";
 import { useAppDispatch } from "@/store/hooks";
 import { updateCareerGoal } from "@/store/userProfileSlice";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 const CAREER_ROLES = [
     { value: "Full Stack Development", emoji: "🌐", label: "Full Stack Developer" },
@@ -33,12 +35,7 @@ export function CareerGoalSettings({ initialRole = "" }: { initialRole?: string 
         if (!selected) return;
         setLoading(true);
         try {
-            const res = await fetch("/api/user/profile", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ careerGoal: { role: selected } }),
-            });
-            if (!res.ok) throw new Error("Failed to update goal");
+            await axios.put("/api/user/profile", { careerGoal: { role: selected } });
 
             // Sync to Redux global state
             dispatch(updateCareerGoal({ role: selected }));
@@ -47,7 +44,7 @@ export function CareerGoalSettings({ initialRole = "" }: { initialRole?: string 
             setTimeout(() => setSaved(false), 2000);
             router.refresh();
         } catch (err: any) {
-            Swal.fire("Error", err.message, "error");
+            Swal.fire("Error", handleApiError(err), "error");
         } finally {
             setLoading(false);
         }

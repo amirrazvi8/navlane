@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { UploadCloud, Loader2 } from "lucide-react"
 import Swal from "sweetalert2"
+import axios from "axios"
+import { handleApiError } from "@/lib/axios"
 
 export function ResumeUpload({ targetGoal, setAnalysisResult }: { targetGoal: string, setAnalysisResult: (data: any) => void }) {
   const [file, setFile] = useState<File | null>(null);
@@ -31,22 +33,12 @@ export function ResumeUpload({ targetGoal, setAnalysisResult }: { targetGoal: st
           formData.append("resume", file);
           formData.append("targetGoal", targetGoal);
 
-          const res = await fetch("/api/analysis/resume", {
-              method: "POST",
-              body: formData
-          });
-          console.log(res);
-
-          if (!res.ok) {
-              const data = await res.json();
-              throw new Error(data.message || "Failed to analyze resume.");
-          }
-
-          const analysis = await res.json();
+          const res = await axios.post("/api/analysis/resume", formData);
+          const analysis = res.data;
           setAnalysisResult(analysis);
           Swal.fire("Success", "Resume analyzed successfully!", "success");
       } catch (error: any) {
-          Swal.fire("Analysis Failed", error.message, "error");
+          Swal.fire("Analysis Failed", handleApiError(error), "error");
       } finally {
           setLoading(false);
       }

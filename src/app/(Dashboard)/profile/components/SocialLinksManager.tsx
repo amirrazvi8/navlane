@@ -10,6 +10,8 @@ import { Loader2, Check, Link, Save } from "lucide-react";
 import { FaLinkedin, FaGithub, FaGlobe, FaXTwitter } from "react-icons/fa6";
 import { useAppDispatch } from "@/store/hooks";
 import { updateSocialLinks } from "@/store/userProfileSlice";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 interface SocialLinks {
     linkedin: string;
@@ -28,12 +30,7 @@ export function SocialLinksManager({ initialLinks }: { initialLinks?: SocialLink
     const handleSave = async () => {
         setLoading(true);
         try {
-            const res = await fetch("/api/user/profile", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ socialLinks: links }),
-            });
-            if (!res.ok) throw new Error("Failed to save links");
+            await axios.put("/api/user/profile", { socialLinks: links });
 
             // Sync to Redux global state
             dispatch(updateSocialLinks(links));
@@ -42,7 +39,7 @@ export function SocialLinksManager({ initialLinks }: { initialLinks?: SocialLink
             setTimeout(() => setSaved(false), 2000);
             router.refresh();
         } catch (err: any) {
-            Swal.fire("Error", err.message, "error");
+            Swal.fire("Error", handleApiError(err), "error");
         } finally {
             setLoading(false);
         }

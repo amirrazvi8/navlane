@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { GraduationCap, Plus, Trash2, Loader2, ChevronUp, Building } from "lucide-react";
 import { useAppDispatch } from "@/store/hooks";
 import { updateEducation } from "@/store/userProfileSlice";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 interface Education {
     degree: string;
@@ -30,12 +32,7 @@ export function EducationManager({ initialEducation = [] }: { initialEducation?:
     const saveToDb = async (updated: Education[]) => {
         setLoading(true);
         try {
-            const res = await fetch("/api/user/profile", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ educationHistory: updated }),
-            });
-            if (!res.ok) throw new Error("Failed to save education");
+            await axios.put("/api/user/profile", { educationHistory: updated });
             setEntries(updated);
 
             // Sync to Redux global state
@@ -43,7 +40,7 @@ export function EducationManager({ initialEducation = [] }: { initialEducation?:
 
             router.refresh();
         } catch (err: any) {
-            Swal.fire("Error", err.message, "error");
+            Swal.fire("Error", handleApiError(err), "error");
         } finally {
             setLoading(false);
         }

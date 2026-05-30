@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Settings, Loader2, Check, Lock } from "lucide-react";
 import Swal from "sweetalert2";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 export function ChangePassowrd() {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -31,13 +33,7 @@ export function ChangePassowrd() {
 
         setLoading(true);
         try {
-            const res = await fetch("/api/user/password", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ currentPassword, newPassword }),
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.message || "Failed to update password");
+            await axios.put("/api/user/password", { currentPassword, newPassword });
 
             setSaved(true);
             setTimeout(() => setSaved(false), 2000);
@@ -45,7 +41,7 @@ export function ChangePassowrd() {
             setNewPassword("");
             setConfirmPassword("");
         } catch (error: any) {
-            Swal.fire("Error", error.message, "error");
+            Swal.fire("Error", handleApiError(error), "error");
         } finally {
             setLoading(false);
         }

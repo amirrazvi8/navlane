@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, ChevronRight, Loader2 } from "lucide-react";
 import Swal from "sweetalert2";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 export function PreviousRoadmapsList({ historyData = [] }: { historyData?: any[] }) {
     const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -15,14 +17,7 @@ export function PreviousRoadmapsList({ historyData = [] }: { historyData?: any[]
     const handleResume = async (id: string) => {
         setLoadingId(id);
         try {
-            const res = await fetch(`/api/roadmap/${id}/resume`, {
-                method: "PUT",
-            });
-
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message || "Failed to resume roadmap");
-            }
+            await axios.put(`/api/roadmap/${id}/resume`);
 
             Swal.fire({
                 title: "Roadmap Resumed!",
@@ -35,7 +30,7 @@ export function PreviousRoadmapsList({ historyData = [] }: { historyData?: any[]
 
             router.refresh();
         } catch (error: any) {
-            Swal.fire("Error", error.message, "error");
+            Swal.fire("Error", handleApiError(error), "error");
         } finally {
             setLoadingId(null);
         }

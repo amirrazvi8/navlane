@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Circle, Clock, ChevronDown, ChevronUp, Loader2, Trophy, Brain } from "lucide-react";
 import Swal from "sweetalert2";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 import { QuizModal } from "./QuizModal";
 
 export function RoadmapTimeline({ roadmapData }: { roadmapData?: any }) {
@@ -28,17 +30,8 @@ export function RoadmapTimeline({ roadmapData }: { roadmapData?: any }) {
     const handleCompleteTask = async (milestoneId: string, subtaskId: string) => {
         setLoadingId(subtaskId);
         try {
-            const res = await fetch("/api/roadmap/subtask", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ roadmapId, milestoneId, subtaskId }),
-            });
-
-            if (!res.ok) {
-                throw new Error("Failed to complete task");
-            }
-
-            const data = await res.json();
+            const res = await axios.put("/api/roadmap/subtask", { roadmapId, milestoneId, subtaskId });
+            const data = res.data;
 
             if (data.milestoneCompleted) {
                 // Milestone just completed — prompt quiz
@@ -76,7 +69,7 @@ export function RoadmapTimeline({ roadmapData }: { roadmapData?: any }) {
                 router.refresh();
             }
         } catch (error: any) {
-            Swal.fire("Error", error.message, "error");
+            Swal.fire("Error", handleApiError(error), "error");
         } finally {
             setLoadingId(null);
         }

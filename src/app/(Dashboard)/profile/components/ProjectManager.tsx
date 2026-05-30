@@ -13,6 +13,8 @@ import { Rocket, Plus, Trash2, Loader2, ChevronUp, ExternalLink, X } from "lucid
 import { FaGithub } from "react-icons/fa6";
 import { useAppDispatch } from "@/store/hooks";
 import { updateProjects } from "@/store/userProfileSlice";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 interface Project {
     title: string;
@@ -34,12 +36,7 @@ export function ProjectManager({ initialProjects = [] }: { initialProjects?: Pro
     const saveToDb = async (updated: Project[]) => {
         setLoading(true);
         try {
-            const res = await fetch("/api/user/profile", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ projects: updated }),
-            });
-            if (!res.ok) throw new Error("Failed to save projects");
+            await axios.put("/api/user/profile", { projects: updated });
             setEntries(updated);
 
             // Sync to Redux global state
@@ -47,7 +44,7 @@ export function ProjectManager({ initialProjects = [] }: { initialProjects?: Pro
 
             router.refresh();
         } catch (err: any) {
-            Swal.fire("Error", err.message, "error");
+            Swal.fire("Error", handleApiError(err), "error");
         } finally {
             setLoading(false);
         }

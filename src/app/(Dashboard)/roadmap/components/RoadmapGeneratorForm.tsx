@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAppSelector } from "@/store/hooks";
 import { selectCareerGoal, selectSkills, selectIsHydrated } from "@/store/userProfileSlice";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 export function RoadmapGeneratorForm() {
   const careerGoal = useAppSelector(selectCareerGoal);
@@ -43,15 +45,7 @@ export function RoadmapGeneratorForm() {
     
     setLoading(true);
     try {
-      const res = await fetch("/api/roadmap", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ careerGoal: role, currentSkills: skillsInput }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to generate roadmap");
-      }
+      await axios.post("/api/roadmap", { careerGoal: role, currentSkills: skillsInput });
 
       Swal.fire({
         title: "Success",
@@ -65,7 +59,7 @@ export function RoadmapGeneratorForm() {
       setAutoFilled(false);
       router.refresh();
     } catch (err: any) {
-      Swal.fire("Error", err.message, "error");
+      Swal.fire("Error", handleApiError(err), "error");
     } finally {
       setLoading(false);
     }
