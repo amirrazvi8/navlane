@@ -50,6 +50,7 @@ export default function RegisterPage() {
                     router.push("/login");
                 });
             } else {
+                console.log("fronterror-register", res);
                 Swal.fire({
                     title: "Registration Failed",
                     text: data.message || "Something went wrong",
@@ -60,6 +61,7 @@ export default function RegisterPage() {
                 });
             }
         } catch (error) {
+            console.log("fronterror-register", error);
             Swal.fire({
                 title: "Error",
                 text: "Network or server error",
