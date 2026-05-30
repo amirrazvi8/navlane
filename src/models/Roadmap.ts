@@ -23,6 +23,8 @@ export interface IRoadmap {
   goal: string;
   milestones: IMilestone[];
   isCompleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const SubtaskSchema = new mongoose.Schema<ISubtask>({

@@ -7,8 +7,8 @@ import bcrypt from 'bcryptjs'
 
 
 export async function POST(req: Request) {
-    await dbConnected();
     try {
+        await dbConnected();
         const { name, email, password, education, bio } = await req.json();
         if (!name || !email || !password) {
             return NextResponse.json(
@@ -42,8 +42,9 @@ export async function POST(req: Request) {
                 }
             }, { status: 200 })
     } catch (error) {
+        console.log("backend-register error",error);
         return NextResponse.json(
-            { message: "Somethings went wrong" },
+            { message: error },
             { status: 500 }
         )
     }
