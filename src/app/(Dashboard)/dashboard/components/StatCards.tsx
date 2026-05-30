@@ -4,8 +4,6 @@ import { CheckCircle, Flame, Map, Clock } from 'lucide-react';
 interface StatCardsProps {
   tasksCompleted: number;
   currentStreak: number;
-  activeRoadmaps: number;
-  hoursLearned: number;
 }
 
 export function StatCards({ tasksCompleted, currentStreak }: StatCardsProps) {
