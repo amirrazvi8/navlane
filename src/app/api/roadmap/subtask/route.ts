@@ -25,13 +25,13 @@ export async function PUT(req: Request) {
         }
 
         // Find the milestone
-        const milestone = roadmap.milestones.id(milestoneId);
+        const milestone = roadmap.milestones.find((m: any) => m._id.toString() === milestoneId);
         if (!milestone) {
             return NextResponse.json({ message: "Milestone not found" }, { status: 404 });
         }
 
         // Find the subtask
-        const subtask = milestone.subtasks.id(subtaskId);
+        const subtask = milestone.subtasks.find((s: any) => s._id.toString() === subtaskId);
         if (!subtask) {
             return NextResponse.json({ message: "Subtask not found" }, { status: 404 });
         }
