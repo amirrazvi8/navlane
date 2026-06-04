@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Loader2, X, Trophy, CheckCircle2, XCircle, Brain, Sparkles } from "lucide-react";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 interface QuizQuestion {
   id: number;
@@ -56,22 +58,12 @@ export function QuizModal({
     setAnswers({});
     setCurrentIndex(0);
     try {
-      const res = await fetch("/api/roadmap/quiz", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roadmapId, milestoneId }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to generate quiz");
-      }
-
-      const data = await res.json();
+      const res = await axios.post("/api/roadmap/quiz", { roadmapId, milestoneId });
+      const data = res.data;
       setQuestions(data.questions);
       setPhase("quiz");
     } catch (err: any) {
-      setError(err.message);
+      setError(handleApiError(err));
       setPhase("loading");
     }
   };
@@ -79,25 +71,15 @@ export function QuizModal({
   const submitQuiz = async () => {
     setPhase("submitting");
     try {
-      const res = await fetch("/api/roadmap/quiz", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roadmapId, milestoneId, answers }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Failed to submit quiz");
-      }
-
-      const data = await res.json();
+      const res = await axios.put("/api/roadmap/quiz", { roadmapId, milestoneId, answers });
+      const data = res.data;
       setScore(data.score);
       setTotal(data.total);
       setResults(data.results);
       setPhase("results");
       onQuizComplete();
     } catch (err: any) {
-      setError(err.message);
+      setError(handleApiError(err));
       setPhase("quiz");
     }
   };

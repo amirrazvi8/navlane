@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, CheckCircle, Clock, Loader2 } from "lucide-react";
 import { IoHourglass } from "react-icons/io5";
 import Swal from "sweetalert2";
+import axios from "axios";
+import { handleApiError } from "@/lib/axios";
 
 const statusClasses: Record<string, string> = {
     Completed: "bg-green-500/10 text-green-500 border-green-500/50",
@@ -28,16 +30,7 @@ export function TodaysTasks({ tasksData = [], roadmapId, milestoneId }: { tasksD
         
         setLoadingId(subtaskId);
         try {
-            const res = await fetch("/api/roadmap/subtask", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ roadmapId, milestoneId, subtaskId }),
-            });
-
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message || "Failed to complete task");
-            }
+            await axios.put("/api/roadmap/subtask", { roadmapId, milestoneId, subtaskId });
 
             Swal.fire({
                 title: "Task Completed!",
@@ -50,20 +43,29 @@ export function TodaysTasks({ tasksData = [], roadmapId, milestoneId }: { tasksD
 
             router.refresh();
         } catch (error: any) {
-            Swal.fire("Error", error.message, "error");
+            Swal.fire("Error", handleApiError(error), "error");
         } finally {
             setLoadingId(null);
         }
     };
 
     return (
-        <Card className="h-full border-primary/30">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-lg font-medium">Today&apos;s Tasks</CardTitle>
-                <CalendarDays className="h-4 w-4 text-muted-foreground" />
+        <Card className="h-full border-0 shadow-sm bg-card hover:shadow-md transition-shadow duration-300">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-primary/5">
+                <CardTitle className="text-lg font-bold tracking-tight">Today&apos;s Tasks</CardTitle>
+                <div className="p-2 bg-primary/10 rounded-full">
+                    <CalendarDays className="h-4 w-4 text-primary" />
+                </div>
             </CardHeader>
-            <CardContent className="space-y-4 pt-4">
-                {tasksData.length === 0 && <p className="text-muted-foreground text-sm text-center py-4">No pending tasks for today.</p>}
+            <CardContent className="space-y-4 pt-6">
+                {tasksData.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
+                        <div className="p-4 bg-muted/30 rounded-full">
+                            <CheckCircle className="h-8 w-8 text-muted-foreground/50" />
+                        </div>
+                        <p className="text-muted-foreground text-sm font-medium">You&apos;re all caught up for today!</p>
+                    </div>
+                )}
                 
                 {tasksData.map((task: any) => {
                     const isInProgress = task.status === "In Progress";
@@ -72,17 +74,19 @@ export function TodaysTasks({ tasksData = [], roadmapId, milestoneId }: { tasksD
                     return (
                     <div 
                         key={task.id} 
-                        className={`flex flex-col gap-2 md:flex-row md:items-center justify-between p-3 border rounded-lg transition-colors ${
-                            isInProgress ? "bg-primary/5 border-primary/30 shadow-sm" : "bg-muted/20"
+                        className={`group flex flex-col gap-3 md:flex-row md:items-center justify-between p-4 rounded-xl transition-all duration-300 ${
+                            isInProgress 
+                                ? "bg-gradient-to-r from-primary/10 to-transparent border border-primary/20 shadow-sm" 
+                                : "bg-muted/10 border border-transparent hover:border-border"
                         }`}
                     >
                         <div className="space-y-1">
-                            <p className={`font-medium leading-none ${task.completed ? "line-through text-muted-foreground" : ""}`}>
+                            <p className={`font-medium transition-colors ${task.completed ? "line-through text-muted-foreground" : "group-hover:text-primary"}`}>
                                 {task.title}
                             </p>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <span className={`px-2 py-0.5 text-xs rounded-full border flex items-center gap-1.5 ${statusClasses[task.status]}`}>
+                        <div className="flex items-center gap-4">
+                            <span className={`px-2.5 py-1 text-xs font-semibold rounded-full border flex items-center gap-1.5 ${statusClasses[task.status]}`}>
                                 {statusIcons[task.status]}
                                 {task.status}
                             </span>
@@ -91,10 +95,10 @@ export function TodaysTasks({ tasksData = [], roadmapId, milestoneId }: { tasksD
                                 <button 
                                     onClick={() => handleComplete(task.id)}
                                     disabled={isCompleting}
-                                    className="h-8 w-8 rounded-full border flex items-center justify-center hover:bg-green-500/10 hover:text-green-500 hover:border-green-500/50 transition-colors disabled:opacity-50 cursor-pointer"
+                                    className="h-9 w-9 rounded-full bg-background border flex items-center justify-center hover:bg-green-500 hover:text-white hover:border-green-500 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-sm group-hover:scale-110"
                                     title="Mark as Complete"
                                 >
-                                    {isCompleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                                    {isCompleting ? <Loader2 className="w-4 h-4 animate-spin text-primary" /> : <CheckCircle className="w-4 h-4" />}
                                 </button>
                             )}
                         </div>

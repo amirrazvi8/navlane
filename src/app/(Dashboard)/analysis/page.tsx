@@ -6,6 +6,7 @@ import { TargetGoalInput } from './components/TargetGoalInput';
 import { RecommendationsCard } from './components/RecommendationsCard';
 import { MissingSkillsList } from './components/MissingSkillsList';
 import { ResumeStandingChart } from './components/ResumeStandingChart';
+import { ResumeEditor } from './components/ResumeEditor';
 
 export default function AnalysisPage() {
     const [targetGoal, setTargetGoal] = useState("");
@@ -39,6 +40,11 @@ export default function AnalysisPage() {
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-2 mt-4">
         <MissingSkillsList missingSkills={analysisResult?.missingSkills || []} />
         <RecommendationsCard recommendations={analysisResult?.recommendations || []} />
+      </div>
+
+      {/* Row 4: Resume Editor */}
+      <div className="mt-8">
+        <ResumeEditor analysisResult={analysisResult} />
       </div>
     </div>
   )

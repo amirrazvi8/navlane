@@ -29,7 +29,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         }
 
         // Find the milestone and update its status
-        const milestone = roadmap.milestones.id(milestoneId);
+        const milestone = (roadmap.milestones as any).id(milestoneId);
         if (!milestone) {
             return NextResponse.json({ message: "Milestone not found" }, { status: 404 });
         }

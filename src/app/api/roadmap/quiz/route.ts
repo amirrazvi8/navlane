@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import dbConnected from "@/lib/db";
 import Roadmap from "@/models/Roadmap";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { generateQuizWithAI } from "@/lib/ai/gemini";
+import { generateQuizWithAI } from "@/lib/ai";
 
 // In-memory store for quiz answer keys (keyed by `roadmapId_milestoneId`)
 const quizAnswerStore = new Map<string, any[]>();

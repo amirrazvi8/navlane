@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import dbConnected from "@/lib/db";
 import Roadmap from "@/models/Roadmap";
 import User from "@/models/User";
-import { generateRoadmapWithAI } from "@/lib/ai/gemini";
+import { generateRoadmapWithAI } from "@/lib/ai";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // GET user's roadmaps

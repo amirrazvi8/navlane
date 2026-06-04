@@ -13,14 +13,14 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { LayoutDashboard, BarChart2, Map, FileText, User, Zap } from "lucide-react";
+import { LayoutDashboard, BarChart2, Map, FileText, User, Zap, Briefcase } from "lucide-react";
 
 const sidebarItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
     { icon: Zap, label: "Insights", href: "/insights" },
+    { icon: Briefcase, label: "Opportunities", href: "/opportunities" },
     { icon: Map, label: "Roadmap", href: "/roadmap" },
     { icon: BarChart2, label: "Analysis", href: "/analysis" },
-    { icon: FileText, label: "Reports", href: "/reports" },
     { icon: User, label: "Profile", href: "/profile" },
 ];
 

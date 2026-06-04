@@ -24,7 +24,7 @@ export async function GET(req: Request) {
     }
 }
 
-// PUT update user profile (e.g. skills, careerGoal)
+// PUT update user profile
 export async function PUT(req: Request) {
     await dbConnected();
     const session = await getServerSession(authOptions);
@@ -35,7 +35,11 @@ export async function PUT(req: Request) {
 
     try {
         const body = await req.json();
-        const { name, skills, careerGoal, bio, education, profileImage } = body;
+        const {
+            name, skills, careerGoal, bio, education, profileImage,
+            educationHistory, projects, experience, socialLinks,
+            location, phone, locationPreference,
+        } = body;
 
         const updateFields: any = {};
         if (name) updateFields.name = name;
@@ -44,6 +48,13 @@ export async function PUT(req: Request) {
         if (bio !== undefined) updateFields.bio = bio;
         if (education !== undefined) updateFields.education = education;
         if (profileImage !== undefined) updateFields.profileImage = profileImage;
+        if (educationHistory !== undefined) updateFields.educationHistory = educationHistory;
+        if (projects !== undefined) updateFields.projects = projects;
+        if (experience !== undefined) updateFields.experience = experience;
+        if (socialLinks !== undefined) updateFields.socialLinks = socialLinks;
+        if (location !== undefined) updateFields.location = location;
+        if (phone !== undefined) updateFields.phone = phone;
+        if (locationPreference !== undefined) updateFields.locationPreference = locationPreference;
 
         const user = await User.findByIdAndUpdate(
             (session.user as any).id,
@@ -85,6 +96,9 @@ export async function DELETE(req: Request) {
 
         const Insight = (await import("@/models/Insight")).default;
         await Insight.deleteMany({ userId: userId });
+
+        const JobCache = (await import("@/models/JobCache")).default;
+        await JobCache.deleteMany({ userId: userId });
 
         return NextResponse.json({ message: "Account and all associated data permanently deleted" }, { status: 200 });
     } catch (error) {

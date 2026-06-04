@@ -7,7 +7,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import dbConnected from "@/lib/db";
 import User from "@/models/User";
 import Insight from "@/models/Insight";
-import { generateInsightsWithAI } from "@/lib/ai/gemini";
+import { generateInsightsWithAI } from "@/lib/ai";
 
 export default async function InsightsPage() {
     await dbConnected();

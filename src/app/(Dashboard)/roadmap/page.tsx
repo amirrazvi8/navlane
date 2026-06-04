@@ -10,7 +10,7 @@ import Roadmap from "@/models/Roadmap";
 export default async function RoadmapPage() {
     await dbConnected();
     const session = await getServerSession(authOptions);
-    let activeRoadmap = null;
+    let activeRoadmap: any = null;
     let pastRoadmaps: any[] = [];
 
     if (session && session.user) {
