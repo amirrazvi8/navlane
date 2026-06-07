@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -29,8 +30,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${inter.variable} ${sora.variable} antialiased`}>
-                <Sidebar />
-                {children}
+                <SessionProvider>
+                    <Sidebar />
+                    {children}
+                </SessionProvider>
             </body>
         </html>
     );

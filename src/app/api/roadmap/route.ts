@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import dbConnected from "@/lib/db";
 import Roadmap from "@/models/Roadmap";
 import User from "@/models/User";
 import { generateRoadmapWithAI } from "@/lib/ai";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 
 // GET user's roadmaps
 export async function GET(req: Request) {
     await dbConnected();
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !(session.user as any)?.id) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
 // POST create a new roadmap via AI
 export async function POST(req: Request) {
     await dbConnected();
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !(session.user as any)?.id) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

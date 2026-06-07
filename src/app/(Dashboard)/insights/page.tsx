@@ -2,8 +2,8 @@ import { LatestTechUpdates } from "./components/LatestTechUpdates";
 import { TechnologyLifeMap } from "./components/TechnologyLifeMap";
 import { SkillROI } from "./components/SkillROI";
 import { IndustryReality } from "./components/IndustryReality";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
+
 import dbConnected from "@/lib/db";
 import User from "@/models/User";
 import Insight from "@/models/Insight";
@@ -11,7 +11,7 @@ import { generateInsightsWithAI } from "@/lib/ai";
 
 export default async function InsightsPage() {
     await dbConnected();
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     let insightData: any = null;
 
     if (session && session.user) {

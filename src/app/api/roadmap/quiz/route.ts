@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import dbConnected from "@/lib/db";
 import Roadmap from "@/models/Roadmap";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 import { generateQuizWithAI } from "@/lib/ai";
 
 // In-memory store for quiz answer keys (keyed by `roadmapId_milestoneId`)
@@ -11,7 +11,7 @@ const quizAnswerStore = new Map<string, any[]>();
 // POST — Generate quiz questions for a completed milestone
 export async function POST(req: Request) {
     await dbConnected();
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !(session.user as any)?.id) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
 // PUT — Submit answers and grade the quiz
 export async function PUT(req: Request) {
     await dbConnected();
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !(session.user as any)?.id) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

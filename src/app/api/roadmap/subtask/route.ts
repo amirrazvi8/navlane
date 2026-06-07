@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import dbConnected from "@/lib/db";
 import Roadmap from "@/models/Roadmap";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 
 export async function PUT(req: Request) {
     await dbConnected();
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !(session.user as any)?.id) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

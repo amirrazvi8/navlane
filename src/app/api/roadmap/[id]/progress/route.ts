@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import dbConnected from "@/lib/db";
 import Roadmap from "@/models/Roadmap";
 import Progress from "@/models/Progress";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     await dbConnected();
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     // Awaiting params is required in Next.js 15+ App Router
     const { id } = await params;

@@ -6,15 +6,15 @@ import { WeeklyStatsChart } from './components/WeeklyStatsChart';
 import { TopSkills } from './components/TopSkills';
 import { StatCards } from './components/StatCards';
 import { ReadinessScore } from './components/ReadinessScore';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { auth } from '@/auth';
+
 import dbConnected from '@/lib/db';
 import User from '@/models/User';
 import Roadmap from '@/models/Roadmap';
 
 export default async function DashboardPage() {
   await dbConnected();
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   let name = 'Guest';
   let activeRoadmap: any = null;
   let userSkills: any[] = [];

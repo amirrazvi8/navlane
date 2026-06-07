@@ -4,7 +4,6 @@
 
 export interface Skill {
   name: string;
-  level: string;
 }
 
 export interface Education {
@@ -35,6 +34,7 @@ export interface SocialLinks {
   github: string;
   portfolio: string;
   twitter: string;
+  instagram: string;
 }
 
 export interface CareerGoal {

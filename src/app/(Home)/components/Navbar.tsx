@@ -1,10 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
+
 
 export async function Navbar() {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     return (
         <nav className="sticky top-0 z-50 bg-background md:bg-transparent hidden sm:block">

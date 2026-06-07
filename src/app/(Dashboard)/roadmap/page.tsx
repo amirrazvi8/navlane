@@ -1,15 +1,15 @@
 import { PreviousRoadmapsList } from "./components/PreviousRoadmapsList";
 import { RoadmapGeneratorForm } from "./components/RoadmapGeneratorForm";
 import { RoadmapTimeline } from "./components/RoadmapTimeline";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
+
 import dbConnected from "@/lib/db";
 import User from "@/models/User";
 import Roadmap from "@/models/Roadmap";
 
 export default async function RoadmapPage() {
     await dbConnected();
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     let activeRoadmap: any = null;
     let pastRoadmaps: any[] = [];
 

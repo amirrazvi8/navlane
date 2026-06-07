@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Check, Link, Save } from "lucide-react";
-import { FaLinkedin, FaGithub, FaGlobe, FaXTwitter } from "react-icons/fa6";
+import { FaLinkedin, FaGithub, FaGlobe, FaXTwitter,FaInstagram } from "react-icons/fa6";
 import { useAppDispatch } from "@/store/hooks";
 import { updateSocialLinks } from "@/store/userProfileSlice";
 import axios from "axios";
@@ -18,10 +18,11 @@ interface SocialLinks {
     github: string;
     portfolio: string;
     twitter: string;
+    instagram:string;
 }
 
 export function SocialLinksManager({ initialLinks }: { initialLinks?: SocialLinks }) {
-    const [links, setLinks] = useState<SocialLinks>(initialLinks || { linkedin: "", github: "", portfolio: "", twitter: "" });
+    const [links, setLinks] = useState<SocialLinks>(initialLinks || { linkedin: "", github: "", portfolio: "", twitter: "", instagram: "" });
     const [loading, setLoading] = useState(false);
     const [saved, setSaved] = useState(false);
     const router = useRouter();
@@ -32,13 +33,12 @@ export function SocialLinksManager({ initialLinks }: { initialLinks?: SocialLink
         try {
             await axios.put("/api/user/profile", { socialLinks: links });
 
-            // Sync to Redux global state
             dispatch(updateSocialLinks(links));
-
+            
             setSaved(true);
             setTimeout(() => setSaved(false), 2000);
             router.refresh();
-        } catch (err: any) {
+        } catch (err) {
             Swal.fire("Error", handleApiError(err), "error");
         } finally {
             setLoading(false);
@@ -50,13 +50,14 @@ export function SocialLinksManager({ initialLinks }: { initialLinks?: SocialLink
         { key: "github" as const, icon: FaGithub, label: "GitHub", placeholder: "https://github.com/yourusername", color: "text-foreground", bgHover: "focus-within:border-foreground/20" },
         { key: "portfolio" as const, icon: FaGlobe, label: "Portfolio", placeholder: "https://yourportfolio.com", color: "text-emerald-500", bgHover: "focus-within:border-emerald-500/30" },
         { key: "twitter" as const, icon: FaXTwitter, label: "Twitter / X", placeholder: "https://x.com/yourhandle", color: "text-sky-500", bgHover: "focus-within:border-sky-500/30" },
+        { key: "instagram" as const, icon: FaInstagram, label: "Instagram", placeholder: "https://instagram.com/yourusername", color: "text-pink-500", bgHover: "focus-within:border-pink-500/30" },
     ];
 
     return (
         <Card className="border-border/40 bg-card/80 backdrop-blur-sm hover:border-border/60 transition-colors duration-300">
             <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-2.5 text-lg">
-                    <div className="p-2 rounded-xl bg-gradient-to-br from-cyan-500/15 to-cyan-500/5 border border-cyan-500/10">
+                    <div className="p-2 rounded-xl bg-linear-to-br from-cyan-500/15 to-cyan-500/5 border border-cyan-500/10">
                         <Link className="h-4 w-4 text-cyan-500" />
                     </div>
                     Social Links

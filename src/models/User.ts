@@ -1,25 +1,13 @@
 import mongoose from 'mongoose'
 
-// ---------------------------------------------------------------------------
-// Skill
-// ---------------------------------------------------------------------------
 export interface ISkill {
   name: string,
-  level: "Beginner" | "Intermediate" | "Advanced" | "Expert"
 }
 
 const SkillSchema = new mongoose.Schema<ISkill>({
-  name: { type: String, required: true },
-  level: {
-    type: String,
-    enum: ["Beginner", "Intermediate", "Advanced", "Expert"],
-    required: true
-  }
+  name: { type: String, required: true }
 })
 
-// ---------------------------------------------------------------------------
-// Education (structured)
-// ---------------------------------------------------------------------------
 export interface IEducation {
   degree: string;
   institution: string;
@@ -36,9 +24,7 @@ const EducationSchema = new mongoose.Schema<IEducation>({
   grade: { type: String, default: "" },
 })
 
-// ---------------------------------------------------------------------------
-// Project
-// ---------------------------------------------------------------------------
+
 export interface IProject {
   title: string;
   description: string;
@@ -55,9 +41,7 @@ const ProjectSchema = new mongoose.Schema<IProject>({
   githubUrl: { type: String, default: "" },
 })
 
-// ---------------------------------------------------------------------------
-// Experience
-// ---------------------------------------------------------------------------
+
 export interface IExperience {
   title: string;
   company: string;
@@ -72,14 +56,12 @@ const ExperienceSchema = new mongoose.Schema<IExperience>({
   description: { type: String, default: "" },
 })
 
-// ---------------------------------------------------------------------------
-// Social Links
-// ---------------------------------------------------------------------------
 export interface ISocialLinks {
   linkedin: string;
   github: string;
   portfolio: string;
   twitter: string;
+  instagram: string;
 }
 
 const SocialLinksSchema = new mongoose.Schema<ISocialLinks>({
@@ -87,15 +69,14 @@ const SocialLinksSchema = new mongoose.Schema<ISocialLinks>({
   github: { type: String, default: "" },
   portfolio: { type: String, default: "" },
   twitter: { type: String, default: "" },
+  instagram: { type: String, default: "" },
 }, { _id: false })
 
-// ---------------------------------------------------------------------------
-// User
-// ---------------------------------------------------------------------------
 export interface IUser {
   name: string,
   email: string,
-  password: string,
+  password?: string,
+  authProvider?: "credentials" | "google",
   education?: string,
   profileImage?: string,
   bio?: string,
@@ -124,9 +105,15 @@ const UserSchema = new mongoose.Schema<IUser>({
   },
   password: {
     type: String,
-    required: true
+    required: false,
+    default: undefined,
+    select:false,
   },
-  // Legacy string field — kept for backward compatibility
+  authProvider: {
+    type: String,
+    enum: ["credentials", "google"],
+    default: "credentials",
+  },
   education: {
     type: String,
     default: ""
@@ -152,7 +139,6 @@ const UserSchema = new mongoose.Schema<IUser>({
         'Mobile Development',
         'Cybersecurity',
         'UI/UX Design',
-        // Keep old values so existing data doesn't break
         ' Ai Enginner',
         'Cloud Enginner',
       ]
@@ -162,7 +148,6 @@ const UserSchema = new mongoose.Schema<IUser>({
     type: [SkillSchema],
     default: []
   },
-  // New structured fields
   educationHistory: {
     type: [EducationSchema],
     default: []
@@ -177,7 +162,7 @@ const UserSchema = new mongoose.Schema<IUser>({
   },
   socialLinks: {
     type: SocialLinksSchema,
-    default: () => ({ linkedin: "", github: "", portfolio: "", twitter: "" })
+    default: () => ({ linkedin: "", github: "", portfolio: "", twitter: "", instagram: "" })
   },
   location: {
     type: String,

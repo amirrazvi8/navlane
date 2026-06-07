@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 import dbConnected from '@/lib/db';
 import User from '@/models/User';
 import JobCache from '@/models/JobCache';
 import { fetchAllJobs } from '@/lib/jobs';
 import { scoreAndRankJobs } from '@/lib/jobs';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+
 import crypto from 'crypto';
 
 const CACHE_TTL_MS = 60 * 60 * 1000;
@@ -54,7 +54,7 @@ function generateProfileHash(user: any): string {
 
 export async function GET(req: Request) {
   await dbConnected();
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session || !(session.user as any)?.id) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
