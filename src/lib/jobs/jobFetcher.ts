@@ -104,14 +104,9 @@ async function scrapeLinkedIn(
       }
     });
 
-    console.log(`[LinkedIn] Scraped ${jobs.length} jobs`);
+
     return jobs;
-  } catch (error: any) {
-    const status = error?.response?.status;
-    console.error(
-      `[LinkedIn] Scrape error (HTTP ${status || 'N/A'}):`,
-      error?.message || error,
-    );
+  } catch {
     return [];
   }
 }
@@ -125,9 +120,6 @@ async function fetchFromJSearch(
   const apiHost = process.env.RAPID_API_HOST || 'jsearch.p.rapidapi.com';
 
   if (!apiKey) {
-    console.warn(
-      '[JSearch] RAPID_API_KEY not set — skipping. Add RAPID_API_KEY to .env for Indeed/Naukri/Glassdoor jobs.',
-    );
     return [];
   }
 
@@ -163,9 +155,7 @@ async function fetchFromJSearch(
       jobs = data.jobs;
     }
 
-    console.log(
-      `[JSearch] API returned ${jobs.length} raw jobs for query: "${searchQuery}"`,
-    );
+
 
     return jobs.map((job) => ({
       externalId: `jsearch-${job.job_id || Math.random().toString(36).slice(2)}`,
@@ -179,19 +169,7 @@ async function fetchFromJSearch(
       description: (job.job_description || '').slice(0, 500),
       postedAt: formatRelativeDate(job.job_posted_at_datetime_utc),
     }));
-  } catch (error: any) {
-    const status = error?.response?.status;
-    const errMsg = error?.response?.data?.message || error?.message || error;
-    if (status === 403 || status === 401) {
-      console.error(
-        `[JSearch] Auth error (HTTP ${status}): Invalid or expired RAPID_API_KEY.`,
-        errMsg,
-      );
-    } else if (status === 429) {
-      console.error('[JSearch] Rate limit exceeded (HTTP 429).', errMsg);
-    } else {
-      console.error(`[JSearch] Fetch error (HTTP ${status || 'N/A'}):`, errMsg);
-    }
+  } catch {
     return [];
   }
 }
@@ -427,10 +405,9 @@ async function scrapeWellfound(
       }
     }
 
-    console.log(`[Wellfound] Scraped ${jobs.length} jobs`);
+
     return jobs;
-  } catch (error: any) {
-    console.error('[Wellfound] Scrape error:', error?.message || error);
+  } catch {
     return [];
   }
 }
@@ -464,8 +441,7 @@ async function fetchFromRemotive(
       description: stripHtml(job.description || '').slice(0, 500),
       postedAt: formatRelativeDate(job.publication_date),
     }));
-  } catch (error: any) {
-    console.error('[Remotive] Fetch error:', error?.message || error);
+  } catch {
     return [];
   }
 }
@@ -475,9 +451,7 @@ export async function fetchAllJobs(
   query: string,
   location: string = '',
 ): Promise<IJobListing[]> {
-  console.log(
-    `[JobFetcher] Fetching jobs for query: "${query}" in "${location}" from all sources...`,
-  );
+
 
   const results = await Promise.allSettled([
     fetchFromJSearch(query, location),
@@ -503,13 +477,7 @@ export async function fetchAllJobs(
     if (result.status === 'fulfilled') {
       const count = result.value.length;
       if (count > 0) successCount++;
-      console.log(`[JobFetcher] ✓ ${sourceNames[index]}: ${count} jobs`);
       allJobs.push(...result.value);
-    } else {
-      console.warn(
-        `[JobFetcher] ✗ ${sourceNames[index]} failed:`,
-        result.reason?.message || result.reason,
-      );
     }
   });
 
@@ -526,9 +494,7 @@ export async function fetchAllJobs(
     return true;
   });
 
-  console.log(
-    `[JobFetcher] Total: ${allJobs.length} raw → ${dedupedJobs.length} after dedup (${successCount}/${sourceNames.length} sources succeeded)`,
-  );
+
   return dedupedJobs;
 }
 

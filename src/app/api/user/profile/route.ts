@@ -101,8 +101,7 @@ export async function DELETE(req: Request) {
         await JobCache.deleteMany({ userId: userId });
 
         return NextResponse.json({ message: "Account and all associated data permanently deleted" }, { status: 200 });
-    } catch (error) {
-        console.error("Account deletion error:", error);
+    } catch {
         return NextResponse.json({ message: "Failed to delete account" }, { status: 500 });
     }
 }

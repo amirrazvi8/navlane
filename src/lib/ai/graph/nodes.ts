@@ -25,7 +25,7 @@ export async function geminiNode(state: AIStateType): Promise<Partial<AIStateTyp
 
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        console.log(`[LangGraph·Gemini] Trying ${modelName} (attempt ${attempt + 1})`);
+
         const response = await model.invoke(messages);
         
         // Extract string response from the LangChain message object
@@ -80,7 +80,7 @@ export async function groqFallbackNode(state: AIStateType): Promise<Partial<AISt
 
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        console.log(`[LangGraph·Groq] Trying ${modelName} (attempt ${attempt + 1})`);
+
         const response = await model.invoke(messages);
         
         const text =

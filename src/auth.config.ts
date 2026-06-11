@@ -10,6 +10,7 @@ import type { NextAuthConfig } from "next-auth";
 const authConfig: NextAuthConfig = {
   pages: {
     signIn: "/login",
+    error: "/login",
   },
 
   session: {

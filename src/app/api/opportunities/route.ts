@@ -99,9 +99,6 @@ export async function GET(req: Request) {
       if (cached && cached.lastFetched) {
         const age = Date.now() - new Date(cached.lastFetched).getTime();
         if (age < CACHE_TTL_MS) {
-          console.log(
-            `[Opportunities] Serving cached results (age: ${Math.round(age / 60000)}min)`,
-          );
           return NextResponse.json({
             jobs: cached.jobs,
             fromCache: true,
@@ -112,9 +109,7 @@ export async function GET(req: Request) {
       }
     }
 
-    console.log(
-      `[Opportunities] Fetching fresh jobs for: "${searchQuery}" in "${userLocation}" (skills for scoring: ${skillKeywords || 'none'})`,
-    );
+
     const rawJobs = await fetchAllJobs(searchQuery, userLocation);
 
     if (rawJobs.length === 0) {
@@ -161,15 +156,14 @@ export async function GET(req: Request) {
       { upsert: true, new: true },
     );
 
-    console.log(`[Opportunities] Returning ${matchedJobs.length} scored jobs`);
+
 
     return NextResponse.json({
       jobs: matchedJobs,
       fromCache: false,
       searchQuery,
     });
-  } catch (error) {
-    console.error('[Opportunities] Error:', error);
+  } catch {
     return NextResponse.json(
       { message: 'Failed to fetch opportunities. Please try again.' },
       { status: 500 },

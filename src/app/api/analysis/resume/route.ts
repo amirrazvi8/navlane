@@ -70,7 +70,6 @@ export async function POST(req: Request) {
         return NextResponse.json(analysisResult, { status: 200 });
 
     } catch (error: any) {
-        console.error("Resume Analysis Error:", error);
 
         const is429 = error?.status === 429 || error?.message?.includes("429");
         const is503 = error?.status === 503 || error?.message?.includes("503") || error?.message?.includes("high demand");

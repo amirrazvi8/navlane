@@ -81,7 +81,7 @@ export async function runWithFallbackMultimodal(
 
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        console.log(`[LangGraph·Gemini·Multimodal] Trying ${modelName} (attempt ${attempt + 1})`);
+
         const message = new HumanMessage({
           content: [
             { type: "image_url", image_url: `data:${mimeType};base64,${base64Data}` },
@@ -107,14 +107,14 @@ export async function runWithFallbackMultimodal(
 
   // --- Step 2: Fallback to Groq ---
   if (geminiExhausted) {
-    console.log("[LangGraph·Multimodal] Gemini exhausted — falling back to Groq");
+
 
     for (const modelName of GROQ_MODELS) {
       const model = getGroqModel(modelName);
 
       for (let attempt = 0; attempt < 2; attempt++) {
         try {
-          console.log(`[LangGraph·Groq·Multimodal] Trying ${modelName} (attempt ${attempt + 1})`);
+
 
           let messages;
           if (isImage) {

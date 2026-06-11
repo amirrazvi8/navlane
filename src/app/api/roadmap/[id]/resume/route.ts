@@ -34,8 +34,7 @@ export async function PUT(req: Request, context: any) {
         await roadmap.save();
 
         return NextResponse.json({ message: "Roadmap resumed successfully" }, { status: 200 });
-    } catch (error) {
-        console.error("Roadmap resume error:", error);
+    } catch {
         return NextResponse.json({ message: "Something went wrong" }, { status: 500 });
     }
 }

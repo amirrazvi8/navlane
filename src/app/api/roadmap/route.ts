@@ -59,8 +59,7 @@ export async function POST(req: Request) {
 
         await newRoadmap.save();
         return NextResponse.json({ roadmap: newRoadmap }, { status: 201 });
-    } catch (error) {
-        console.error("Roadmap generation error:", error);
+    } catch {
         return NextResponse.json({ message: "Failed to generate roadmap" }, { status: 500 });
     }
 }

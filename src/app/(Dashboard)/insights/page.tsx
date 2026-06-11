@@ -24,7 +24,6 @@ export default async function InsightsPage() {
         const isStale = insight ? (Date.now() - new Date(insight.lastGenerated).getTime() > fifteenDays) : false;
 
         if (!insight || isStale) {
-            console.log("Generating fresh AI insights...");
             const aiData = await generateInsightsWithAI(careerRole);
             if (!insight) {
                 insight = new Insight({ userId: user._id, ...aiData });

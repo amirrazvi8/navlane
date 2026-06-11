@@ -11,7 +11,6 @@ export default async function ProfilePage() {
 
     if (session && session.user) {
         const user = await User.findById((session.user as any).id);
-        console.log('Fetched user data:', user);
         if (user) {
             userObj = JSON.parse(JSON.stringify({
                 name: user.name || "",

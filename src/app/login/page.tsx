@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
@@ -22,12 +22,41 @@ import { motion } from 'framer-motion';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  // Handle OAuth errors (e.g., user cancelled Google sign-in)
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error) {
+      const errorMessages: Record<string, string> = {
+        OAuthAccountNotLinked: 'This email is already linked to another sign-in method. Please use your original sign-in method.',
+        OAuthCallbackError: 'Sign-in was cancelled or failed. Please try again.',
+        OAuthSignin: 'Could not start the sign-in process. Please try again.',
+        OAuthCreateAccount: 'Could not create your account. Please try again.',
+        Callback: 'Sign-in was cancelled. Please try again.',
+        AccessDenied: 'Access denied. You do not have permission to sign in.',
+        default: 'An error occurred during sign-in. Please try again.',
+      };
+
+      Swal.fire({
+        title: 'Sign-in Cancelled',
+        text: errorMessages[error] || errorMessages.default,
+        icon: 'info',
+        background: '#1e1b4b',
+        color: '#fff',
+        confirmButtonColor: '#4f46e5',
+      });
+
+      // Clean the error from the URL without triggering a re-render loop
+      router.replace('/login', { scroll: false });
+    }
+  }, [searchParams, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -55,7 +84,6 @@ export default function LoginPage() {
         });
       } else {
         router.push('/dashboard');
-        console.log('login data', res);
       }
     } catch (error) {
       Swal.fire({

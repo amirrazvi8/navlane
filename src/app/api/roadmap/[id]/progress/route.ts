@@ -64,8 +64,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         await progress.save();
 
         return NextResponse.json({ message: "Progress updated", milestone }, { status: 200 });
-    } catch (error) {
-        console.error(error);
+    } catch {
         return NextResponse.json({ message: "Failed to update progress" }, { status: 500 });
     }
 }

@@ -53,11 +53,9 @@ export default function RegisterPage() {
         color: '#fff',
         confirmButtonColor: '#4f46e5',
       }).then(() => {
-        console.log('register data', res);
         router.push('/login');
       });
     } catch (error) {
-      console.log('fronterror-register', error);
       Swal.fire({
         title: 'Registration Failed',
         text: handleApiError(error),

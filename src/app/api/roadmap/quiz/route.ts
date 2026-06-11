@@ -66,7 +66,6 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ questions: clientQuestions }, { status: 200 });
     } catch (error: any) {
-        console.error("Quiz generation error:", error);
 
         const is429 = error?.status === 429 || error?.message?.includes("429");
         const is503 = error?.status === 503 || error?.message?.includes("503") || error?.message?.includes("overloaded");
@@ -149,8 +148,7 @@ export async function PUT(req: Request) {
         quizAnswerStore.delete(storeKey);
 
         return NextResponse.json({ score, total, results }, { status: 200 });
-    } catch (error: any) {
-        console.error("Quiz grading error:", error);
+    } catch {
         return NextResponse.json({ message: "Failed to grade quiz. Please try again." }, { status: 500 });
     }
 }

@@ -67,8 +67,7 @@ export async function PUT(req: Request) {
             milestoneCompleted: allCompleted,
             milestoneId: allCompleted ? milestoneId : null
         }, { status: 200 });
-    } catch (error) {
-        console.error("Task completion error:", error);
+    } catch {
         return NextResponse.json({ message: "Something went wrong" }, { status: 500 });
     }
 }

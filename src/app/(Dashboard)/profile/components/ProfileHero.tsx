@@ -50,7 +50,6 @@ export function ProfileHero({
     }
   };
 
-  console.log('socialLinks in ProfileHero', socialLinks);
 
   const socialItems = [
     {

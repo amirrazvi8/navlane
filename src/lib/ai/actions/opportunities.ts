@@ -35,7 +35,6 @@ export const matchJobsWithAI = async (
     
     // Validate the response structure
     if (!Array.isArray(parsed)) {
-      console.error("[JobMatcher] AI response is not an array, using fallback scoring");
       return jobs.map((j) => ({
         index: j.index,
         matchPercentage: 50,
@@ -50,8 +49,7 @@ export const matchJobsWithAI = async (
         ? item.matchReasons.map(String) 
         : ["Match calculated"],
     }));
-  } catch (parseError) {
-    console.error("[JobMatcher] Failed to parse AI response:", parseError);
+  } catch {
     // Return default scores if AI fails
     return jobs.map((j) => ({
       index: j.index,

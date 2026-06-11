@@ -33,7 +33,7 @@ export async function scoreAndRankJobs(
 ): Promise<IMatchedJob[]> {
   if (jobs.length === 0) return [];
 
-  console.log(`[JobMatcher] Scoring ${jobs.length} jobs against user profile...`);
+
 
   const matchedJobs: IMatchedJob[] = [];
 
@@ -63,8 +63,7 @@ export async function scoreAndRankJobs(
           matchReasons: score?.matchReasons ?? ["Default match score"],
         });
       });
-    } catch (error) {
-      console.error(`[JobMatcher] AI scoring failed for batch ${i}-${i + batch.length}:`, error);
+    } catch {
       // Add jobs with default scores if AI fails for this batch
       batch.forEach((job) => {
         matchedJobs.push({
@@ -79,6 +78,6 @@ export async function scoreAndRankJobs(
   // Sort by match percentage descending
   matchedJobs.sort((a, b) => b.matchPercentage - a.matchPercentage);
 
-  console.log(`[JobMatcher] Scoring complete. Top match: ${matchedJobs[0]?.matchPercentage}%`);
+
   return matchedJobs;
 }

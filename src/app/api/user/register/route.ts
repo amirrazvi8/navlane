@@ -42,9 +42,9 @@ export async function POST(req: Request) {
                 }
             }, { status: 200 })
     } catch (error) {
-        console.log("backend-register error",error);
+        const message = error instanceof Error ? error.message : "Registration failed";
         return NextResponse.json(
-            { message: error },
+            { message },
             { status: 500 }
         )
     }
